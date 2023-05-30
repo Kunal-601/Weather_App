@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Weather App</title>
+  </head>
+  <body class="bg-gradient-to-r from-purple-900 to-blue-900">
+    <div class="flex justify-center pt-20">
+      <div
+        class="bg-white justify-center shadow-md rounded-md p-4 mx-auto bg-gradient-to-r from-blue-500 to-purple-500 hover:from-purple-500 hover:to-blue-500 hover:shadow-lg hover:scale-105 transition-all duration-300">
+        <div class="flex px-4 searchBox">
+          <input
+            id="cityInput"
+            type="text"
+            class="rounded-lg px-1 mr-4 focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-300"
+            placeholder="Enter City Name"
+            spellcheck="false"
+          />
+          <button class="p-2 rounded-full bg-white hover:bg-gray-300 focus:bg-gray-300 active:bg-gray-500 border border-transparent transition duration-300 ease-in-out focus:outline-none focus:border-purple-300 active:border-purple-400 ">
+            <img
+              id="searchBtn"
+              src="./images/search.png"
+              width="15"
+              alt="search logo"
+            />
+          </button>
+        </div>
+
+        <!-- For Showing the error  -->
+        <div class="hidden error">
+          <p class="text-red-200 font-bold text-center mt-10">Invalid City Name !!</p>
+          <p class="text-red-200 font-bold text-center mt-5">Enter Correct Name</p>
+        </div>
+
+
+        <div class="hidden w-170 justify-center flex flex-col px-20 weather">
+          <img
+            id="weatherIcon"
+            class="hover:scale-125 duration-300"
+            src="images/clouds.png"
+            width="100"
+            alt="weather icon"
+          />
+          <h1 class="text-white text-2xl font-bold px-4 temprature">26°C</h1>
+          <h2 class="text-white text-xl font-semibold pb-3 cityName">New Delhi</h2>
+        
+          <div class="flex  mt-4 details">
+            <div class=" flex mx-4 ">
+                <img  src="images/humidity.png" width="40">
+                <div class="px-3 flex px-2">
+                    <p  class="text-white font-bold py-0">Humidity</p>
+                    <p class=" text-white px-3 humidity">19%</p>
+                </div>
+            </div>
+            <div class="flex mx-4">
+                <img src="images/wind.png" width="40">
+                <div class="px-3  flex px-2">
+                    <p class="text-white font-bold">Wind Speed</p>
+                    <p class=" text-white px-3 windspeed">19 Km/h</p>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+        const API_KEY = "8755ceb2652796bd42b2a25890a6aac5";
+        const url = "https://api.openweathermap.org/data/2.5/weather?units=metric&q="
+
+        const citySearched = document.getElementById("cityInput");
+        
+        const btn = document.getElementById("searchBtn");
+
+        async function checkWeather(city){
+            try {
+              const response = await fetch(url + city + `&appid=${API_KEY}`);
+              const result = await response.json();
+
+              //Updating data from api in card 
+              document.querySelector(".cityName").innerHTML=result.name +" , " + result.sys.country;
+              document.querySelector(".temprature").innerHTML=result.main.temp+" °C"+", " + result.weather[0].main +  ", (Feels Like " + result.main.feels_like +" °C )";
+              document.querySelector(".humidity").innerHTML=result.main.humidity + "%";
+              document.querySelector(".windspeed").innerHTML=result.wind.speed + " Km/h";
+
+              // Updating the images in the card 
+              if(result.weather[0].main == "Clear")
+              {
+                document.getElementById("weatherIcon").src="images/clear.png";
+              }
+              else if(result.weather[0].main == "Clouds")
+              {
+                document.getElementById("weatherIcon").src="images/clouds.png";
+              }
+              else if(result.weather[0].main == "Snow")
+              {
+                document.getElementById("weatherIcon").src="images/snow.png";
+              }
+              else if(result.weather[0].main == "Rain")
+              {
+                document.getElementById("weatherIcon").src="images/rain.png";
+              }
+              else if(result.weather[0].main == "Mist")
+              {
+                document.getElementById("weatherIcon").src="images/mist.png";
+              }
+              else if(result.weather[0].main == "Drizzle")
+              {
+                document.getElementById("weatherIcon").src="images/drizzle.png";
+              }
+
+              document.querySelector(".weather").style.display = "block";
+
+            } catch (error) {
+              document.querySelector(".error").style.display = "block";
+              document.querySelector(".weather").style.display = "none";
+              console.log(error.message);
+            }
+        }
+        btn.addEventListener("click" , () => {
+            checkWeather(citySearched.value);
+        })
+
+    </script>
+  </body>
+</html>
